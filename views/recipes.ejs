@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recipe Box</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* small tweaks specific to recipes */
+    .ingredients {
+      white-space: pre-wrap;
+      color: #9aa0ad;
+      font-size: 0.95rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">
+        <h1>🍽️ Recipe Box</h1>
+        <p class="tag">Organize your favorite recipes — fast.</p>
+      </div>
+      <div class="top-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-pressed="false"
+          title="Toggle theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path id="theme-path" fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <form class="search-form" action="/add-recipe" method="POST">
+      <input type="text" name="title" placeholder="Recipe title" required />
+      <input type="text" name="imageUrl" placeholder="Image URL (optional)" />
+      <button type="submit">Add Recipe</button>
+    </form>
+
+    <div class="books-grid">
+      <% recipes.forEach(recipe=> { %>
+        <div class="book-card">
+          <% if (recipe.image_url) { %>
+            <img src="<%= recipe.image_url %>" class="cover" alt="<%= recipe.title %>" />
+            <% } else { %>
+              <div class="cover" style="display:grid;place-items:center">🍽️</div>
+              <% } %>
+                <div class="card-content">
+                  <h2>
+                    <%= recipe.title %>
+                  </h2>
+                  <p class="small-note">Tags: <%= recipe.tags || '—' %>
+                  </p>
+                  <p class="ingredients">
+                    <%= recipe.ingredients ? recipe.ingredients : '' %>
+                  </p>
+                  <div class="card-action">
+                    <form action="/delete-recipe" method="POST" style="display:inline">
+                      <input type="hidden" name="recipeId" value="<%= recipe.id %>" />
+                      <button class="btn delete" type="submit">Delete</button>
+                    </form>
+                    <form action="/edit-recipe" method="POST" style="display:inline">
+                      <input type="hidden" name="recipeId" value="<%= recipe.id %>" />
+                      <input type="hidden" name="title" value="<%= recipe.title %>" />
+                      <button class="btn edit" type="submit">Edit</button>
+                    </form>
+                  </div>
+                </div>
+        </div>
+        <% }) %>
+    </div>
+
+  </div>
+  <footer class="site-footer">
+    <small>Made with ❤️ • Simple Recipe Box</small>
+  </footer>
+  <script src="/theme-toggle.js"></script>
+</body>
+
+</html>
