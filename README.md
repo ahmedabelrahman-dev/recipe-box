@@ -1,3 +1,7 @@
+# demo
+
+![recipe demo](demo1.png)
+
 # Recipe Box
 
 A small Recipe Box app (Express + EJS + Postgres).

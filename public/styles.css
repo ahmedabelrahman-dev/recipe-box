@@ -35,6 +35,11 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helveti
 .btn.delete{background:linear-gradient(90deg,#ff7b7b,#ff5a5a);color:white}
 .btn.edit{background:linear-gradient(90deg,var(--accent-2),#61f0bd);color:white}
 
+/* cover link fallback */
+.cover-wrap{position:relative}
+.cover-link{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,0.6);color:white;padding:6px 8px;border-radius:8px;text-decoration:none;font-size:0.85rem;display:none}
+.cover-link:hover{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+
 /* Footer */
 .site-footer{margin-top:28px;text-align:center;color:var(--muted)}
 

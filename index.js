@@ -49,9 +49,41 @@ app.post('/add-recipe', async (req, res) => {
   const { title, ingredients, instructions, imageUrl, tags } = req.body;
   if(!title) return res.status(400).send('Title required');
   try{
+    // If imageUrl is provided but doesn't look like a direct image, try to resolve an og:image
+    let chosenImage = imageUrl;
+    const looksLikeImage = typeof imageUrl === 'string' && /\.(jpe?g|png|gif|webp|svg|avif)(?:\?|$)/i.test(imageUrl);
+    if(imageUrl && !looksLikeImage){
+      try{
+        // use fetch with a short timeout to avoid hanging
+        const controller = new AbortController();
+        const timeout = setTimeout(()=>controller.abort(), 5000);
+        const resp = await fetch(imageUrl, { signal: controller.signal, headers: { 'User-Agent': 'RecipeBox/1.0 (+https://example)' } });
+        clearTimeout(timeout);
+        if(resp.ok){
+          const html = await resp.text();
+          // try to find og:image or link rel=image_src
+          const ogMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]*content=["']([^"']+)["']/i) || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+          const linkMatch = html.match(/<link[^>]+rel=["']image_src["'][^>]*href=["']([^"']+)["']/i);
+          const candidate = (ogMatch && ogMatch[1]) || (linkMatch && linkMatch[1]);
+          if(candidate){
+            try{
+              // resolve relative URLs
+              const base = new URL(imageUrl);
+              const resolved = new URL(candidate, base).toString();
+              chosenImage = resolved;
+            }catch(e){
+              chosenImage = candidate;
+            }
+          }
+        }
+      }catch(e){
+        console.warn('Could not resolve og:image for', imageUrl, e.message);
+      }
+    }
+
     await db.query(
       'INSERT INTO recipes (title, ingredients, instructions, image_url, tags) VALUES ($1,$2,$3,$4,$5)',
-      [title, ingredients, instructions, imageUrl, tags]
+      [title, ingredients, instructions, chosenImage, tags]
     );
     res.redirect('/');
   }catch(err){

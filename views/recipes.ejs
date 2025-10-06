@@ -46,7 +46,11 @@
       <% recipes.forEach(recipe=> { %>
         <div class="book-card">
           <% if (recipe.image_url) { %>
-            <img src="<%= recipe.image_url %>" class="cover" alt="<%= recipe.title %>" />
+            <div class="cover-wrap">
+              <img src="<%= recipe.image_url %>" class="cover" alt="<%= recipe.title %>" />
+              <a class="cover-link" href="<%= recipe.image_url %>" target="_blank" rel="noopener noreferrer">Open
+                link</a>
+            </div>
             <% } else { %>
               <div class="cover" style="display:grid;place-items:center">🍽️</div>
               <% } %>
@@ -79,6 +83,7 @@
   <footer class="site-footer">
     <small>Made with ❤️ • Simple Recipe Box</small>
   </footer>
+  <script src="/image-fallback.js"></script>
   <script src="/theme-toggle.js"></script>
 </body>
 
